@@ -30,12 +30,7 @@ module.exports = {
   },
 
   getInitialState: function () {
-    return {
-      firstVisibleColumn: 0,
-      lastVisibleColumn: 0,
-      firstVisibleRow: 0,
-      lastVisibleRow: 0
-    };
+    return {};
   },
 
   componentDidMount: function () {
