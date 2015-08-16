@@ -1,5 +1,6 @@
 "use strict";
 
+var assign = require("object-assign");
 var r = require("react-wrapper");
 var scrollerMap = r.wrap(require("./scroller-map"));
 var scrollerTile = r.wrap(require("./scroller-tile"));
@@ -109,14 +110,11 @@ module.exports = {
             y >= this.state.firstVisibleRow &&
             y <= this.state.lastVisibleRow);
           tiles.push(
-            scrollerTile({
+            scrollerTile(assign({}, this.props, {
                 key: "t-" + x + "-" + y,
-                columnWidth: this.props.columnWidth,
-                rowHeight: this.props.rowHeight,
-                tileChild: this.props.tileChild,
                 x: x,
                 y: y
-              }));
+              })));
           mapTiles.push({
               x: x,
               y: y,

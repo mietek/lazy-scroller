@@ -11,6 +11,7 @@
   "license": "MIT",
   "main": "src/index.js",
   "dependencies": {
+    "object-assign": "^3.0.0",
     "react-wrapper": "^1.0.1"
   },
   "peerDependencies": {
