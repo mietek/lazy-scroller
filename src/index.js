@@ -146,7 +146,8 @@ module.exports = {
               style: {
                 width: this.props.columnCount * this.props.columnWidth,
                 height: this.props.rowCount * this.props.rowHeight,
-                position: "relative"
+                position: "relative",
+                zIndex: -1
               }
             },
             tiles)),
