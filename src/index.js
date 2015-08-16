@@ -123,6 +123,12 @@ module.exports = {
         }
       }
     }
+    var frameWidth = (
+      this.props.columnCount === 1 ? "100%" :
+        this.props.columnCount * this.props.columnWidth);
+    var frameHeight = (
+      this.props.rowCount === 1 ? "100%" :
+        this.props.rowCount * this.props.rowHeight);
     return (
       r.div({
           className: "scroller",
@@ -144,8 +150,8 @@ module.exports = {
           r.div({
               className: "scroller-frame",
               style: {
-                width: this.props.columnCount * this.props.columnWidth,
-                height: this.props.rowCount * this.props.rowHeight,
+                width: frameWidth,
+                height: frameHeight,
                 position: "relative",
                 zIndex: -1
               }

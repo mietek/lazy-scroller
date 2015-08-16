@@ -17,12 +17,18 @@ module.exports = {
   },
 
   render: function () {
+    var width = (
+      this.props.columnCount === 1 ? "100%" :
+        this.props.columnWidth);
+    var height = (
+      this.props.rowCount === 1 ? "100%" :
+        this.props.rowHeight);
     return (
       r.div({
           className: "scroller-tile",
           style: {
-            width: this.props.columnWidth,
-            height: this.props.rowHeight,
+            width: width,
+            height: height,
             position: "absolute",
             left: this.props.x * this.props.columnWidth,
             top: this.props.y * this.props.rowHeight,
