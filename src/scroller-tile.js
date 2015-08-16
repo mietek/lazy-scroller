@@ -33,7 +33,7 @@ module.exports = {
             height: height,
             position: "absolute",
             left: this.props.x * this.props.columnWidth,
-            top: this.props.y * this.props.rowHeight,
+            top: this.props.y * this.props.rowHeight
           }
         },
         this.props.tileChild(assign({}, this.props.tileChildProps, {
