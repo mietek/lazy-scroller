@@ -13,7 +13,8 @@ module.exports = {
       rowCount: r.propTypes.number,
       rowHeight: r.propTypes.number,
       tileValidity: r.propTypes.number,
-      tileChild: r.propTypes.func.isRequired
+      tileChild: r.propTypes.func.isRequired,
+      tileChildProps: r.propTypes.object
     };
   },
 
@@ -23,7 +24,8 @@ module.exports = {
       columnWidth: 1000,
       rowCount: 1,
       rowHeight: 1000,
-      tileValidity: 5
+      tileValidity: 5,
+      tileChildProps: {}
     };
   },
 

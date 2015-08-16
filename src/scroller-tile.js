@@ -1,5 +1,6 @@
 "use strict";
 
+var assign = require("object-assign");
 var r = require("react-wrapper");
 
 module.exports = {
@@ -11,6 +12,7 @@ module.exports = {
       rowHeight: r.propTypes.number.isRequired,
       tileValidity: r.propTypes.number.isRequired,
       tileChild: r.propTypes.func.isRequired,
+      tileChildProps: r.propTypes.object.isRequired,
       x: r.propTypes.number.isRequired,
       y: r.propTypes.number.isRequired
     };
@@ -34,7 +36,10 @@ module.exports = {
             top: this.props.y * this.props.rowHeight,
           }
         },
-        this.props.tileChild(this.props)));
+        this.props.tileChild(assign({}, this.props.tileChildProps, {
+            x: this.props.x,
+            y: this.props.y
+          }))));
   }
 };
 
