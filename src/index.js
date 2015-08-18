@@ -37,7 +37,7 @@ module.exports = {
     var node = r.domNode(this).firstChild;
     node.addEventListener("scroll", this.onRefresh);
     addEventListener("resize", this.onRefresh);
-    this.updateTileExpiry();
+    this.updateState();
   },
 
   componentWillUnmount: function () {
@@ -49,12 +49,12 @@ module.exports = {
   onRefresh: function (event) {
     window.requestAnimationFrame(function () {
         if (this.isMounted()) {
-          this.updateTileExpiry();
+          this.updateState();
         }
       }.bind(this));
   },
 
-  updateTileExpiry: function () {
+  updateState: function () {
     var tileExpiry = Date.now() + this.props.tileValidity * 1000;
     var state = this.computeTileVisibility();
     for (var x = state.firstVisibleColumn; x <= state.lastVisibleColumn; x += 1) {
