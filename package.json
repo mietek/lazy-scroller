@@ -12,7 +12,8 @@
   "main": "src/index.js",
   "dependencies": {
     "object-assign": "^3.0.0",
-    "react-wrapper": "^1.0.1"
+    "react-wrapper": "^1.0.1",
+    "target-history-mixin": "^1.0.0"
   },
   "peerDependencies": {
     "react": "^0.13.3"

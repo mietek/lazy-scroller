@@ -2,10 +2,13 @@
 
 var assign = require("object-assign");
 var r = require("react-wrapper");
+var targetHistoryMixin = require("target-history-mixin");
 var scrollerMap = r.wrap(require("./scroller-map"));
 var scrollerTile = r.wrap(require("./scroller-tile"));
 
 module.exports = {
+  mixins: [targetHistoryMixin],
+
   propTypes: function () {
     return {
       columnCount: r.propTypes.number,
@@ -14,7 +17,11 @@ module.exports = {
       rowHeight: r.propTypes.number,
       tileValidity: r.propTypes.number,
       tileChild: r.propTypes.func.isRequired,
-      tileChildProps: r.propTypes.object
+      tileChildProps: r.propTypes.object,
+      initialTarget: r.propTypes.object,
+      encodeTarget: r.propTypes.func,
+      decodeTarget: r.propTypes.func,
+      onRetarget: r.propTypes.func
     };
   },
 
@@ -25,7 +32,11 @@ module.exports = {
       rowCount: 1,
       rowHeight: 1000,
       tileValidity: 5,
-      tileChildProps: {}
+      tileChildProps: {},
+      initialTarget: {
+        x: 0,
+        y: 0
+      }
     };
   },
 
@@ -35,23 +46,104 @@ module.exports = {
 
   componentDidMount: function () {
     var node = r.domNode(this).firstChild;
-    node.addEventListener("scroll", this.onRefresh);
-    addEventListener("resize", this.onRefresh);
-    this.updateState();
+    node.addEventListener("scroll", this.onScroll);
+    addEventListener("resize", this.onResize);
+    var target = this.getCurrentTarget();
+    if (!this.scrollTo(target)) {
+      this.updateState();
+    }
+    if (this.props.onRetarget) {
+      this.props.onRetarget(target);
+    }
   },
 
   componentWillUnmount: function () {
     var node = r.domNode(this).firstChild;
-    node.removeEventListener("scroll", this.onRefresh);
-    removeEventListener("resize", this.onRefresh);
+    node.removeEventListener("scroll", this.onScroll);
+    removeEventListener("resize", this.onResize);
   },
 
-  onRefresh: function (event) {
+  componentDidUpdate: function (prevProps, prevState) {
+    var isChanged = (
+      prevState.centreVisibleColumn !== this.state.centreVisibleColumn ||
+      prevState.middleVisibleRow !== this.state.middleVisibleRow);
+    if (isChanged) {
+      var target = {
+        x: this.state.centreVisibleColumn,
+        y: this.state.middleVisibleRow
+      };
+      this.pushTarget(target);
+      if (this.props.onRetarget) {
+        this.props.onRetarget(target);
+      }
+    }
+  },
+
+  onScroll: function (event) {
     window.requestAnimationFrame(function () {
         if (this.isMounted()) {
           this.updateState();
         }
       }.bind(this));
+  },
+
+  onResize: function (event) {
+    window.requestAnimationFrame(function () {
+        if (this.isMounted()) {
+          var target = this.getCurrentTarget();
+          if (!this.scrollTo(target)) {
+            this.updateState();
+          }
+          if (this.props.onRetarget) {
+            this.props.onRetarget(target);
+          }
+        }
+      }.bind(this));
+  },
+
+  onPopTarget: function (target) {
+    window.requestAnimationFrame(function () {
+        if (this.isMounted()) {
+          this.scrollTo(target);
+          if (this.props.onRetarget) {
+            this.props.onRetarget(target);
+          }
+        }
+      }.bind(this));
+  },
+
+  scrollTo: function (target) {
+    var node = r.domNode(this).firstChild;
+    var scrollLeft = this.computeScrollLeft(node, target.x);
+    var scrollTop = this.computeScrollTop(node, target.y);
+    var isChanged = (
+      node.scrollLeft !== scrollLeft ||
+      node.scrollTop !== scrollTop);
+    if (isChanged) {
+      node.scrollLeft = scrollLeft;
+      node.scrollTop = scrollTop;
+    }
+    return isChanged;
+  },
+
+  computeScrollLeft: function (node, x) {
+    var maxScrollLeft = this.props.columnCount * this.props.columnWidth - node.clientWidth;
+    return (
+      Math.max(0,
+        Math.min(
+          Math.round(
+            x * this.props.columnWidth - (node.clientWidth - this.props.columnWidth) / 2),
+          maxScrollLeft)));
+  },
+
+  computeScrollTop: function (node, y) {
+    var maxScrollTop = this.props.rowCount * this.props.rowHeight - node.clientHeight;
+    return (
+      Math.max(0,
+        Math.min(
+          Math.round(
+            y * this.props.rowHeight - (node.clientHeight - this.props.rowHeight) / 2),
+          maxScrollTop)));
   },
 
   updateState: function () {
@@ -68,13 +160,17 @@ module.exports = {
   computeTileVisibility: function () {
     var node = r.domNode(this).firstChild;
     var firstVisibleColumn = this.computeColumn(node.scrollLeft);
+    var centreVisibleColumn = this.computeColumn(node.scrollLeft + node.clientWidth / 2);
     var lastVisibleColumn = this.computeColumn(node.scrollLeft + node.clientWidth);
     var firstVisibleRow = this.computeRow(node.scrollTop);
+    var middleVisibleRow = this.computeRow(node.scrollTop + node.clientHeight / 2);
     var lastVisibleRow = this.computeRow(node.scrollTop + node.clientHeight);
     return {
       firstVisibleColumn: firstVisibleColumn,
+      centreVisibleColumn: centreVisibleColumn,
       lastVisibleColumn: lastVisibleColumn,
       firstVisibleRow: firstVisibleRow,
+      middleVisibleRow: middleVisibleRow,
       lastVisibleRow: lastVisibleRow
     };
   },
