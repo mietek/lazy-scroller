@@ -65,12 +65,12 @@ module.exports = {
 
   componentDidUpdate: function (prevProps, prevState) {
     var isChanged = (
-      prevState.centreVisibleColumn !== this.state.centreVisibleColumn ||
-      prevState.middleVisibleRow !== this.state.middleVisibleRow);
+      prevState.firstVisibleColumn !== this.state.firstVisibleColumn ||
+      prevState.firstVisibleRow !== this.state.firstVisibleRow);
     if (isChanged) {
       var target = {
-        x: this.state.centreVisibleColumn,
-        y: this.state.middleVisibleRow
+        x: this.state.firstVisibleColumn,
+        y: this.state.firstVisibleRow
       };
       this.pushTarget(target);
       if (this.props.onRetarget) {
@@ -131,8 +131,7 @@ module.exports = {
     return (
       Math.max(0,
         Math.min(
-          Math.round(
-            x * this.props.columnWidth - (node.clientWidth - this.props.columnWidth) / 2),
+          Math.floor(x * this.props.columnWidth),
           maxScrollLeft)));
   },
 
@@ -141,8 +140,7 @@ module.exports = {
     return (
       Math.max(0,
         Math.min(
-          Math.round(
-            y * this.props.rowHeight - (node.clientHeight - this.props.rowHeight) / 2),
+          Math.floor(y * this.props.rowHeight),
           maxScrollTop)));
   },
 
@@ -160,17 +158,13 @@ module.exports = {
   computeTileVisibility: function () {
     var node = r.domNode(this).firstChild;
     var firstVisibleColumn = this.computeColumn(node.scrollLeft);
-    var centreVisibleColumn = this.computeColumn(node.scrollLeft + node.clientWidth / 2);
     var lastVisibleColumn = this.computeColumn(node.scrollLeft + node.clientWidth);
     var firstVisibleRow = this.computeRow(node.scrollTop);
-    var middleVisibleRow = this.computeRow(node.scrollTop + node.clientHeight / 2);
     var lastVisibleRow = this.computeRow(node.scrollTop + node.clientHeight);
     return {
       firstVisibleColumn: firstVisibleColumn,
-      centreVisibleColumn: centreVisibleColumn,
       lastVisibleColumn: lastVisibleColumn,
       firstVisibleRow: firstVisibleRow,
-      middleVisibleRow: middleVisibleRow,
       lastVisibleRow: lastVisibleRow
     };
   },
