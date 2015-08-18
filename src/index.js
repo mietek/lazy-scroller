@@ -162,4 +162,4 @@ module.exports = {
   }
 };
 
-r.makeComponent("App", module);
+r.makeComponent("Scroller", module);
